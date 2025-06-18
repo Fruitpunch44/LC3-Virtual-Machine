@@ -6,6 +6,7 @@
 
 int main(int argc,char* argv[]){
 
+    //load image file
     if(argc <2){
         printf("usage   lc3 [image file].....\n");
         exit(1);
@@ -31,7 +32,7 @@ int main(int argc,char* argv[]){
 
         //instruction to handle
         switch(op_code){
-            case OP_ADD:
+            case OP_ADD:{
             //destination register
             uint16_t r0 = (instruction >> 9) & 0x7;
 
@@ -49,11 +50,11 @@ int main(int argc,char* argv[]){
                 reg[r0]=reg[r1]+reg[r2];
             }
             update_flags(r0);
-
-
             break;
+        }
 
-            case OP_AND:
+
+            case OP_AND:{
             uint16_t r0= (instruction >> 9)& 0x7; //destination reg
             uint16_t r1 =(instruction >> 6)& 0x7; //first operand
             uint16_t imm_flag =(instruction >> 5 )& 0x1; //imm flag
@@ -69,19 +70,25 @@ int main(int argc,char* argv[]){
             update_flags(r0);
 
             break;
-
-            case OP_NOT:
+        }
+            case OP_NOT:{
             uint16_t r0= (instruction >> 9)& 0x7; //destination reg
             uint16_t r1 =(instruction >> 6)& 0x7; //first operand
 
             reg[r0] = !(reg[r1]);
             update_flags(r0);
-
             break;
-
-
-
-
+        }
+            case OP_JMP:{ 
+            uint16_t r1 = (instruction >> 6) & 0x7;
+            reg[R_PC]=reg[r1];
+            break;
+            }
+            case OP_RET:{
+            uint16_t r1 = (instruction >> 6) & 0x7;
+            reg[R_PC]=reg[r1];
+            break;
+        }
           
         }
 
