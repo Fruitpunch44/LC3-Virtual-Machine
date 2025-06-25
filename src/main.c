@@ -3,7 +3,9 @@
 #include"flags.c"
 #include "include/source.h"
 #include"helper_functions.c"
-
+#include"memory_access.c"
+#include"input_buffering.c"
+#include"op_code_instruction.c"
 
 int main(int argc,char* argv[]){
 
@@ -39,50 +41,15 @@ int main(int argc,char* argv[]){
         //instruction to handle
         switch(op_code){
             case OP_ADD:{
-            //destination register
-            uint16_t r0 = (instruction >> 9) & 0x7;
-
-            //firdt operand
-            uint16_t r1 =(instruction >> 6 ) & 0x7;
-            //if we are in immediate mode
-            uint16_t imm_flag = (instruction >> 5) & 0x1;
-
-            if(imm_flag){
-                uint16_t imm5=sign_extend(instruction & 0x1F,5);
-                reg[r0]=reg[r1]+imm5;
-            }
-            else{
-                uint16_t r2 =instruction & 0x7;
-                reg[r0]=reg[r1]+reg[r2];
-            }
-            update_flags(r0);
-            break;
+                op_add(instruction);
+                break;
         }
-
-
             case OP_AND:{
-            uint16_t r0= (instruction >> 9)& 0x7; //destination reg
-            uint16_t r1 =(instruction >> 6)& 0x7; //first operand
-            uint16_t imm_flag =(instruction >> 5 )& 0x1; //imm flag
-
-            if (imm_flag){
-                uint16_t imm5=sign_extend(instruction & 0x1F,5);
-                reg[r0]= reg[r1] & imm5;
-            }
-            else{
-                uint16_t r2 =instruction & 0x7;
-                reg[r0]= reg[r1] & reg[r2];
-            }
-            update_flags(r0);
-
+                op_and(instruction);
             break;
         }
             case OP_NOT:{
-            uint16_t r0= (instruction >> 9)& 0x7; //destination reg
-            uint16_t r1 =(instruction >> 6)& 0x7; //first operand
-
-            reg[r0] = ~(reg[r1]);
-            update_flags(r0);
+                op_not(instruction);
             break;
         }
             case OP_JMP:{ 
