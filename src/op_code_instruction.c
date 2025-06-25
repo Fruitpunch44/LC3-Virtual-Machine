@@ -1,6 +1,7 @@
 #include "op_codes.c"
 #include "include/source.h"
 #include"helper_functions.c"
+#include"memory_access.c"
 
 
 void op_add(uint16_t instruction){
@@ -27,7 +28,7 @@ void op_add(uint16_t instruction){
 void op_not(uint16_t instruction){
     uint16_t r0= (instruction >> 9)& 0x7; //destination reg
     uint16_t r1 =(instruction >> 6)& 0x7; //first operand
-    reg[r0] = ~(reg[r1]);
+    reg[r0] = ~(reg[r1]);//not operation
     update_flags(r0);
 }
 
@@ -45,4 +46,50 @@ void op_and(uint16_t instruction){
     }
     update_flags(r0);
 
+}
+
+void op_jmp(uint16_t instruction){
+    uint16_t r1 = (instruction >> 6) & 0x7; //destination register
+    reg[R_PC] = reg[r1]; //set program counter to the value in the register
+}
+
+void op_ret(uint16_t instruction){
+    reg[R_PC] = reg[R7]; //return to the address in R7
+}
+
+void op_LD(uint16_t instructions){
+    uint16_t r0=(instructions>>9) & 0x7 ;//
+    uint16_t pc_offset=sign_extend(instructions & 0x1FF,9);
+    reg[r0]=mem_read(reg[R_PC]+ pc_offset);
+    update_flags(r0);
+}
+
+void op_LDR(uint16_t instruction){
+    uint16_t r0=(instruction>>9) & 0x7;
+    uint16_t r1=(instruction>>6) & 0x7;
+    uint16_t offset=sign_extend(instruction & 0x3F,6);
+    reg[r0]=mem_read(reg[r1]+offset);
+    update_flags(r0);
+
+}
+
+void op_LDI(uint16_t instruction){
+    uint16_t r0=(instruction>>9) & 0x7;
+    uint16_t pc_offset=sign_extend(instruction & 0x1FF,9);
+    reg[r0]=mem_read(mem_read(reg[R_PC]+pc_offset));
+    update_flags(r0);
+
+}
+void op_LEA(uint16_t instruction){
+    uint16_t r0=(instruction>>9) & 0x7;
+    uint16_t pc_offset=sign_extend(instruction & 0x1FF,9);
+    reg[r0]=reg[R_PC]+pc_offset;
+    update_flags(r0);
+
+}
+void op_ST(uint16_t instruction){
+    uint16_t r0=(instruction>>9) & 0x7;
+    uint16_t pc_offset=sign_extend(instruction & 0x1FF,9);
+    reg[r0]=mem_write(reg[R_PC]+pc_offset,reg[r0]);
+    update_flags(r0);
 }
