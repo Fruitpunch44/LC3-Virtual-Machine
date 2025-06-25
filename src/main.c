@@ -1,10 +1,15 @@
-#include "op codes.c"
-#include"memory storgae.c"
+#include "op_codes.c"
+#include"memory_storage.c"
 #include"flags.c"
-#include<signal.h>
-#include"helper functions.c"
+#include "include/source.h"
+#include"helper_functions.c"
+
 
 int main(int argc,char* argv[]){
+
+    //setup
+    signal(SIGINT,handle_interrupt);
+    disable_input_buffering();
 
     //load image file
     if(argc <2){
@@ -17,6 +22,7 @@ int main(int argc,char* argv[]){
             printf("failed to load image %S",argv[j]);
         }
     }
+
     //only one conditonal flag shouldbe set at aany givrn time
     reg[R_COND]=FLAG_ZERO;
 
@@ -61,11 +67,11 @@ int main(int argc,char* argv[]){
 
             if (imm_flag){
                 uint16_t imm5=sign_extend(instruction & 0x1F,5);
-                reg[0]= reg[r1] & imm5;
+                reg[r0]= reg[r1] & imm5;
             }
             else{
                 uint16_t r2 =instruction & 0x7;
-                reg[0]= reg[r1] & reg[r2];
+                reg[r0]= reg[r1] & reg[r2];
             }
             update_flags(r0);
 
@@ -75,7 +81,7 @@ int main(int argc,char* argv[]){
             uint16_t r0= (instruction >> 9)& 0x7; //destination reg
             uint16_t r1 =(instruction >> 6)& 0x7; //first operand
 
-            reg[r0] = !(reg[r1]);
+            reg[r0] = ~(reg[r1]);
             update_flags(r0);
             break;
         }
@@ -86,9 +92,13 @@ int main(int argc,char* argv[]){
             }
             case OP_RET:{
             uint16_t r1 = (instruction >> 6) & 0x7;
-            reg[R_PC]=reg[r1];
+            reg[R_PC]=reg[R7];
             break;
         }
+            case OP_TRAP:{
+                running = 0 ;
+                break;
+            }
           
         }
 
