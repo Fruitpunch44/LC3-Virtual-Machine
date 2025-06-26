@@ -48,12 +48,12 @@ void op_and(uint16_t instruction){
 
 }
 
-void op_jmp(uint16_t instruction){
+void op_JMP(uint16_t instruction){
     uint16_t r1 = (instruction >> 6) & 0x7; //destination register
     reg[R_PC] = reg[r1]; //set program counter to the value in the register
 }
 
-void op_ret(uint16_t instruction){
+void op_RET(uint16_t instruction){
     reg[R_PC] = reg[R7]; //return to the address in R7
 }
 
@@ -90,8 +90,21 @@ void op_LEA(uint16_t instruction){
 void op_ST(uint16_t instruction){
     uint16_t r0=(instruction>>9) & 0x7;
     uint16_t pc_offset=sign_extend(instruction & 0x1FF,9);
-    reg[r0]=mem_write(reg[R_PC]+pc_offset,reg[r0]);
-    update_flags(r0);
+    mem_write(reg[R_PC]+pc_offset,reg[r0]);
+}
+
+void op_STI(uint16_t instruction){
+    uint16_t r0=(instruction >> 9 ) & 0x7;
+    uint16_t pc_offset =sign_extend(instruction & 0x1FF,9);
+    mem_write(mem_read(reg[R_PC] + pc_offset), reg[r0]);
+}
+
+void op_STR(uint16_t instruction){
+    uint16_t r0=(instruction >> 9) & 0x7;
+    uint16_t r1=(instruction >> 6) & 0x7;
+    uint16_t offset = sign_extend(instruction & 0x3F,6);
+    mem_write(reg[r1]+offset,reg[r0]);
+
 }
 
 void op_JSRR(uint16_t instruction){
@@ -107,3 +120,4 @@ void op_JSRR(uint16_t instruction){
     }
     update_flags(reg[R7]);
 }
+
