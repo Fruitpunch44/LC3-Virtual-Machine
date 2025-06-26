@@ -93,3 +93,17 @@ void op_ST(uint16_t instruction){
     reg[r0]=mem_write(reg[R_PC]+pc_offset,reg[r0]);
     update_flags(r0);
 }
+
+void op_JSRR(uint16_t instruction){
+    reg[R7]=reg[R_PC];
+    uint16_t long_flag= (instruction >> 11) & 0x1;
+    if(long_flag == 0){
+        uint16_t r1 =(instruction >> 6) & 0x7;
+        reg[R_PC] = reg[r1]; /* JSRR */
+    }
+    else{
+        uint16_t pc_offset=sign_extend(instruction & 0x7FF,11);
+        reg[R_PC]+=pc_offset; /* JSR */
+    }
+    update_flags(reg[R7]);
+}
