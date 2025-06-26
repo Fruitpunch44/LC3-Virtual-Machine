@@ -46,21 +46,39 @@ int main(int argc,char* argv[]){
         }
             case OP_AND:{
                 op_and(instruction);
-            break;
+                break;
         }
             case OP_NOT:{
                 op_not(instruction);
-            break;
+                break;
         }
-            case OP_JMP:{ 
-            uint16_t r1 = (instruction >> 6) & 0x7;
-            reg[R_PC]=reg[r1];
-            break;
+            case OP_LD:{ 
+                op_LD(instruction);
+                break;
             }
             case OP_RET:{
-            uint16_t r1 = (instruction >> 6) & 0x7;
-            reg[R_PC]=reg[R7];
-            break;
+                op_RET(instruction);
+                break;
+        }
+            case OP_LEA:{
+                op_LEA(instruction);
+                break;
+        }
+            case OP_LDI:{
+                op_LDI(instruction);
+                break;
+        }
+            case OP_LDR:{
+                op_LDR(instruction);
+                break;
+        }
+            case OP_ST:{
+                op_ST(instruction);
+                break;
+        }
+        case OP_JSR:{
+                op_JSRR(instruction);
+                break;
         }
             case OP_TRAP:{
                 running = 0 ;
