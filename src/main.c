@@ -81,7 +81,7 @@ int main(int argc,char* argv[]){
                 break;
         }
             case OP_TRAP:{
-                running = 0 ;
+                 ;
                 break;
             }
           

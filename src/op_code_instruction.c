@@ -2,6 +2,7 @@
 #include "include/source.h"
 #include"helper_functions.c"
 #include"memory_access.c"
+#include "Trap_Routines.c"
 
 
 void op_add(uint16_t instruction){
@@ -119,5 +120,12 @@ void op_JSRR(uint16_t instruction){
         reg[R_PC]+=pc_offset; /* JSR */
     }
     update_flags(reg[R7]);
+}
+
+void op_TRAP(uint16_t instructions){
+    reg[R7]= reg[R_PC];
+    uint16_t trapvect8 = instructions & 0xFF;
+    reg[R_PC]= mem_read(trapvect8);
+
 }
 

@@ -18,4 +18,6 @@ enum{
     OP_STR,//Store Base+offset
     OP_TRAP//System Call
 
+    //might not do all i'm lazy
+
 };
