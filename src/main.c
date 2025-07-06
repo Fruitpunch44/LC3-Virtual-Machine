@@ -7,6 +7,12 @@
 #include"input_buffering.c"
 #include"op_code_instruction.c"
 
+void handle_interrupt(int signal){
+    restore_input_buffering();
+    printf("\n");
+    exit(-2);
+};
+
 int main(int argc,char* argv[]){
 
     //setup
@@ -81,7 +87,49 @@ int main(int argc,char* argv[]){
                 break;
         }
             case OP_TRAP:{
-                 ;
+                uint16_t Trap_value=op_TRAP(instruction);
+
+                switch(Trap_value){
+
+                    case TRAP_GETC:{
+                    reg[R0]=getchar();
+                    update_flags(R0);
+                    break;
+                    }
+
+                    case TRAP_IN:{
+                        printf("enter something a character most likely: ");
+                        char c =getchar();
+                        putc(c,stdout);
+                        fflush(stdout);
+                        reg[R0] = c;
+                        update_flags(R0);
+                        break;
+                    }
+                    case TRAP_PUTSP:{
+                        uint16_t*c = memory + reg[R0];
+                        while(*c){
+                            char character1 = (*c) & 0xff;
+                            putc(character1,stdout);
+                            char character2 =(*c)>>8;
+                            if (character2){
+                                putc(character2,stdout);
+                                ++c;
+                            }
+                            fflush(stdout);
+                        }
+
+                    }
+                    case TRAP_HALT:{
+                        puts("STOP");
+                        fflush(stdout);
+                        running = 0;
+
+                    }
+                }
+
+
+
                 break;
             }
           
